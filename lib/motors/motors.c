@@ -24,8 +24,8 @@ void motors_init(void) {
     // ( 16MHz / (16KHz * 1)) - 1 = 999 -> 0x03E7
     ICR1 = 999;
     // Configurar el valor de ciclo de trabajo (0-999 para 0-100%)
-    OCR1A = 800;  // Ejemplo de un ciclo de trabajo del 50%
-    OCR1B = 800;  // Ejemplo de un ciclo de trabajo del 50%
+    OCR1A = 500;  // Ejemplo de un ciclo de trabajo del 50%
+    OCR1B = 500;  // Ejemplo de un ciclo de trabajo del 50%
 
     // Inicializa el puente H en una dirección
     PORTD |= (1 << AIN1) | (1 << BIN1);
@@ -33,30 +33,32 @@ void motors_init(void) {
 }
 
 // Función para controlar la velocidad y dirección del motor A
-void controlMotorA(uint16_t speed, uint8_t direction) {
-    OCR1A = speed; // Establece la velocidad del Motor A
-    if (direction == 1) {
+void controlMotorA(int16_t speed) {
+    if (speed > 0) {
         PORTD |= (1 << AIN1);
         PORTD &= ~(1 << AIN2);
-    } else if (direction == 2) {
+    } else if (speed < 0) {
         PORTD |= (1 << AIN2);
         PORTD &= ~(1 << AIN1);
+        speed = -speed;
     } else {
         PORTD &= ~((1 << AIN1) | (1 << AIN2));
     }
+    OCR1A = speed; // Establece la velocidad del Motor A
 }
 
 // Función para controlar la velocidad y dirección del motor B
-void controlMotorB(uint16_t speed, uint8_t direction) {
-    OCR1B = speed; // Establece la velocidad del Motor B
-    if (direction == 1) {
+void controlMotorB(int16_t speed) {
+    if (speed > 0) {
         PORTD |= (1 << BIN1);
         PORTD &= ~(1 << BIN2);
-    } else if (direction == 2) {
+    } else if (speed < 0) {
         PORTD |= (1 << BIN2);
         PORTD &= ~(1 << BIN1);
+        speed = -speed;
     } else {
         PORTD &= ~((1 << BIN1) | (1 << BIN2));
     }
+    OCR1B = speed; // Establece la velocidad del Motor B
 }
 
